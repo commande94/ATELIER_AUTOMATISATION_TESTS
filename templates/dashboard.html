@@ -1,1 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard QoS - Cat Facts API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f7f6; color: #333; }
+        h1 { color: #2c3e50; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #f8f9fa; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>📊 Dashboard QoS & Tests : Cat Facts API</h1>
+    
+    <div class="card">
+        <h3>Actions</h3>
+        <button onclick="triggerRun()">Lancer un nouveau Test Run (/run)</button>
+        <span id="loading" style="margin-left: 15px; display: none;">Exécution en cours...</span>
+    </div>
 
+    <div class="card">
+        <h3>Historique des Exécutions</h3>
+        {% if runs %}
+            {% for run in runs %}
+                <div style="border-bottom: 2px solid #eee; margin-bottom: 15px; padding-bottom: 15px;">
+                    <p><strong>Date (UTC) :</strong> {{ run.timestamp }}</p>
+                    <p>
+                        <strong>Succès :</strong> <span class="pass">{{ run.summary.passed }}</span> | 
+                        <strong>Échecs :</strong> <span class="fail">{{ run.summary.failed }}</span> | 
+                        <strong>Taux d'erreur :</strong> {{ run.summary.error_rate * 100 }}% | 
+                        <strong>Latence Moy :</strong> {{ run.summary.latency_ms_avg }} ms | 
+                        <strong>Latence p95 :</strong> {{ run.summary.latency_ms_p95 }} ms
+                    </p>
+                    <table>
+                        <tr>
+                            <th>Nom du Test</th>
+                            <th>Statut</th>
+                            <th>Latence (ms)</th>
+                            <th>Détails</th>
+                        </tr>
+                        {% for test in run.tests %}
+                        <tr>
+                            <td>{{ test.name }}</td>
+                            <td class="{{ 'pass' if test.status == 'PASS' else 'fail' }}">{{ test.status }}</td>
+                            <td>{{ test.latency_ms }}</td>
+                            <td>{{ test.details if test.details else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aucun run enregistré pour le moment. Cliquez sur le bouton ci-dessus pour lancer le premier test !</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function triggerRun() {
+            document.getElementById('loading').style.display = 'inline';
+            fetch('/run')
+                .then(response => response.json())
+                .then(data => {
+                    alert('Tests exécutés avec succès !');
+                    location.reload();
+                })
+                .catch(error => {
+                    alert('Erreur lors de l\'exécution des tests.');
+                    document.getElementById('loading').style.display = 'none';
+                });
+        }
+    </script>
+</body>
+</html>
