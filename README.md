@@ -63,7 +63,7 @@ Difficulté : Moyenne (~120 minutes)
 Vous pouvez retrouver le travail demandé dans le cadre de cet atelier directement sur votre site pythonanywhere (ex: monuser.pythonanywhere.com).    
    
 --------------------------------------------------------------------
-🧠 Troubleshooting :
+🧠 Troubleshooting : 
 ---------------------------------------------------
 Objectif : Visualiser ses logs et découvrir ses erreurs
 ---------------------------------------------------
